@@ -1,35 +1,67 @@
 <script setup lang="ts">
-import ScreenOne from "./views/ScreenOne.vue";
-import ScreenTwo from "./views/ScreenTwo.vue";
+import { ref } from "vue";
+import { useTodoStore } from "./stores/todos";
 
+import TodoTracker from "./components/TodoTracker.vue";
+
+const todoStore = useTodoStore();
+const inputTodo = ref("");
+
+const handleAddTodo = () => {
+  todoStore.addTodo(inputTodo.value);
+  inputTodo.value = "";
+};
 </script>
 
 <template>
   <div class="container">
-    <ScreenOne class="screen screen1" />
-    <ScreenTwo class="screen" />
+    <TodoTracker></TodoTracker>
+    <div>
+      <input
+        v-model="inputTodo"
+        @keyup.enter="handleAddTodo"
+        style="width: 100%" />
+    </div>
+    <br />
+    <div v-for="(todo, idx) in todoStore.filteredTodos">
+      <div class="todo-item">
+        <div :class="todo.isFinished ? 'finished-todo' : ''">
+          {{ idx + 1 }}. {{ todo.text }}
+        </div>
+        <input
+          type="checkbox"
+          v-model="todo.isFinished"
+          style="width: 32px; height: 32px" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style>
 .container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+  max-width: 1024px;
+  margin: 20px auto;
 }
 
-.screen {
-  border: 1px solid black;
-  height: 50vh;
-}
-
-.screen-container {
+.todo-item {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+
+  margin: 10px;
   align-items: center;
+  border: 1px solid grey;
+  padding: 10px 20px;
+  font-size: 26px;
+  border-radius: 10px;
+}
+.finished-todo {
+  text-decoration: line-through;
 }
 
-.screen1 {
-  border: 1px solid red;
+input {
+  widows: 100%;
+  height: 32px;
+  font-size: 26px;
+  padding: 5px 10px;
 }
 </style>
